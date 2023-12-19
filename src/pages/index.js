@@ -127,8 +127,18 @@ export default function Home({ resource, unit, unit_group }) {
 
     console.log('========pro_unit========', pro_unit);
     console.log('========filterUnitGroup========', filterUnitGroup);
+    console.log('=========resource=========', resource);
   }, [resourceName, unit_group]);
   console.log('========pro_unit outside========', pro_unit);
+  console.log('=========resourceName=========', resourceName);
+
+  const resourceTemplate = resource.filter((item) => {
+    return item.nm === resourceName;
+  });
+
+  const report = resourceTemplate && resourceTemplate[0]?.rep;
+
+  console.log('=========resourceTemplate=========', report);
   return (
     <>
       <Head>
@@ -173,7 +183,14 @@ export default function Home({ resource, unit, unit_group }) {
                   <div className='card-body'>
                     <select
                       id='templ'
-                      className='js-example-templating js-persons form-control'></select>
+                      className='js-example-templating js-persons form-control'>
+                      {report &&
+                        Object.keys(report).map((key) => (
+                          <option value={report[key].n} key={report[key].id}>
+                            {report[key].n}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
               </div>
