@@ -64,6 +64,7 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsResource)
     .then(async function (data) {
+      console.log('======resource======', data);
       resource = data.items;
     })
     .catch(function (err) {
@@ -74,6 +75,7 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsUnit)
     .then(async function (data) {
+      console.log('======unit======', data);
       unit = data.items;
     })
     .catch(function (err) {
@@ -84,6 +86,7 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsUnitGroup)
     .then(async function (data) {
+      console.log('=========unit_group========', data);
       unit_group = data.items;
     })
     .catch(function (err) {
@@ -106,9 +109,11 @@ export default function Home({ resource, unit, unit_group }) {
 
   // console.log('========resource========', resource);
   // console.log('========unit========', unit);
+  console.log('========unit_group========', unit_group);
+  console.log('========unit========', unit);
   const onOptionChangeHandler = (event) => {
     setResoureName(event.target.value);
-    console.log('User Selected Value - ', event.target.value);
+    ///console.log('User Selected Value - ', event.target.value);
   };
 
   useEffect(() => {
@@ -126,11 +131,11 @@ export default function Home({ resource, unit, unit_group }) {
     setProUnit(filterObjectsByIds(unit, objectIds));
 
     console.log('========pro_unit========', pro_unit);
-    console.log('========filterUnitGroup========', filterUnitGroup);
+    // console.log('========filterUnitGroup========', filterUnitGroup);
     console.log('=========resource=========', resource);
   }, [resourceName, unit_group]);
   console.log('========pro_unit outside========', pro_unit);
-  console.log('=========resourceName=========', resourceName);
+  // console.log('=========resourceName=========', resourceName);
 
   const resourceTemplate = resource.filter((item) => {
     return item.nm === resourceName;
@@ -241,7 +246,6 @@ export default function Home({ resource, unit, unit_group }) {
                 </div>
               </div>
             </div>
-
             <div className='row'>
               <div className='btn-list'>
                 <input
@@ -253,6 +257,102 @@ export default function Home({ resource, unit, unit_group }) {
               </div>
             </div>
             <div id='log'></div>
+            {/* <div className={`${styles.tableBody}`}>
+              <table
+                id='dtHorizontalVerticalExample'
+                className={`${styles.dtHorizontalVerticalExample} table table-striped table-bordered`}
+                cellspacing='0'>
+                <thead className='sticky-top'>
+                  <tr>
+                    <th>Driver Name</th>
+                    <th>Driver Score</th>
+                    <th>Distance</th>
+                    <th>Max Speed</th>
+                    <th className='table table-striped table-bordered'>
+                      <thead>Harsh Events</thead>
+                      <td>Acceleration</td>
+                      <td>Braking</td>
+                      <td>Driving Hours</td>
+                      <td>Speed</td>
+                    </th>
+                    <th>Driver Score Components</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Tiger</td>
+                    <td>Nixon</td>
+                    <td>System Architect</td>
+                    <td>Edinburgh</td>
+                    <td>
+                      <td>43</td>
+                      <td>43</td>
+                      <td>43</td>
+                      <td>43</td>
+                    </td>
+                    <td>2011/04/25</td>
+                    <td>$320,800</td>
+                    <td>5421</td>
+                    <td>t.nixon@datatables.net</td>
+                  </tr>
+                  <tr>
+                    <td>Garrett</td>
+                    <td>Winters</td>
+                    <td>Accountant</td>
+                    <td>Tokyo</td>
+                    <td>63</td>
+                    <td>2011/07/25</td>
+                    <td>$170,750</td>
+                    <td>8422</td>
+                    <td>g.winters@datatables.net</td>
+                  </tr>
+                  <tr>
+                    <td>Ashton</td>
+                    <td>Cox</td>
+                    <td>Junior Technical Author</td>
+                    <td>San Francisco</td>
+                    <td>66</td>
+                    <td>2009/01/12</td>
+                    <td>$86,000</td>
+                    <td>1562</td>
+                    <td>a.cox@datatables.net</td>
+                  </tr>
+                  <tr>
+                    <td>Cedric</td>
+                    <td>Kelly</td>
+                    <td>Senior Javascript Developer</td>
+                    <td>Edinburgh</td>
+                    <td>22</td>
+                    <td>2012/03/29</td>
+                    <td>$433,060</td>
+                    <td>6224</td>
+                    <td>c.kelly@datatables.net</td>
+                  </tr>
+                  <tr>
+                    <td>Airi</td>
+                    <td>Satou</td>
+                    <td>Accountant</td>
+                    <td>Tokyo</td>
+                    <td>33</td>
+                    <td>2008/11/28</td>
+                    <td>$162,700</td>
+                    <td>5407</td>
+                    <td>a.satou@datatables.net</td>
+                  </tr>
+                  <tr>
+                    <td>Brielle</td>
+                    <td>Williamson</td>
+                    <td>Integration Specialist</td>
+                    <td>New York</td>
+                    <td>61</td>
+                    <td>2012/12/02</td>
+                    <td>$372,000</td>
+                    <td>4804</td>
+                    <td>b.williamson@datatables.net</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div> */}
           </div>
         </div>
       </main>
