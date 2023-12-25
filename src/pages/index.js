@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 export async function getStaticProps() {
@@ -64,7 +64,6 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsResource)
     .then(async function (data) {
-      console.log('======resource======', data);
       resource = data.items;
     })
     .catch(function (err) {
@@ -75,7 +74,6 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsUnit)
     .then(async function (data) {
-      console.log('======unit======', data);
       unit = data.items;
     })
     .catch(function (err) {
@@ -86,7 +84,6 @@ export async function getStaticProps() {
   await session
     .request('core/search_items', paramsUnitGroup)
     .then(async function (data) {
-      console.log('=========unit_group========', data);
       unit_group = data.items;
     })
     .catch(function (err) {
@@ -105,45 +102,119 @@ export async function getStaticProps() {
 
 export default function Home({ resource, unit, unit_group }) {
   const [resourceName, setResoureName] = useState('');
-  const [pro_unit, setProUnit] = useState([]);
+  const [resourceId, setResourceId] = useState('');
+  const [templateId, setTemplateId] = useState('');
+  const [unitId, setUnitId] = useState('');
+  const [report, setReport] = useState('');
+  const [interval, setInterval] = useState('');
+  const fromRef = useRef(null);
+  const toRef = useRef(null);
+  const from = fromRef.current;
+  const to = toRef.current;
 
-  // console.log('========resource========', resource);
-  // console.log('========unit========', unit);
-  console.log('========unit_group========', unit_group);
-  console.log('========unit========', unit);
-  const onOptionChangeHandler = (event) => {
-    setResoureName(event.target.value);
-    ///console.log('User Selected Value - ', event.target.value);
+  console.log('========resource===========', resource);
+  console.log('========unit===========', unit);
+
+  const onOptionChangeHandlerInterval = (event) => {
+    setInterval(event.target.value);
   };
 
-  useEffect(() => {
-    const filterUnitGroup = unit_group.filter((item) => {
-      const unitGroup = item.nm.split(' ')[0].toLowerCase();
-      const resourceGroup = resourceName.split(/[ | - | _]/)[0].toLowerCase();
-      return unitGroup === resourceGroup;
-    });
-    const objectIds = filterUnitGroup[0]?.u;
+  const convertToUnixTimestamp = (milliseconds) => {
+    // Specify the date and time
+    // const dateString = '2023-12-22 00:00:00';
+    const dateObject = new Date();
 
-    function filterObjectsByIds(unit, objectIds) {
-      return unit.filter((obj) => objectIds?.includes(obj.id));
+    const unixTimestamp = Math.floor(
+      (dateObject.getTime() - milliseconds) / 1000
+    );
+    return unixTimestamp;
+  };
+
+  const convertInterval = (interval) => {
+    switch (interval) {
+      case '1-day':
+        fromRef.current = convertToUnixTimestamp(86400000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      case '1-week':
+        fromRef.current = convertToUnixTimestamp(604800000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      case '1-month':
+        fromRef.current = convertToUnixTimestamp(2592000000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      default:
+        fromRef.current = convertToUnixTimestamp(86400000);
+        toRef.current = convertToUnixTimestamp(0);
     }
+  };
 
-    setProUnit(filterObjectsByIds(unit, objectIds));
+  console.log('====from====', from);
+  console.log('====to====', to);
 
-    console.log('========pro_unit========', pro_unit);
-    // console.log('========filterUnitGroup========', filterUnitGroup);
-    console.log('=========resource=========', resource);
-  }, [resourceName, unit_group]);
-  console.log('========pro_unit outside========', pro_unit);
-  // console.log('=========resourceName=========', resourceName);
+  const onOptionChangeHandler = (event) => {
+    setResoureName(event.target.value);
+    console.log('User Selected Value - ', resourceName);
+  };
 
-  const resourceTemplate = resource.filter((item) => {
-    return item.nm === resourceName;
-  });
+  const onOptionChangeHandlerTemplate = (event) => {
+    setTemplateId(event.target.value);
+  };
 
-  const report = resourceTemplate && resourceTemplate[0]?.rep;
+  const onOptionChangeHandlerUnit = (event) => {
+    setUnitId(event.target.value);
+  };
+  console.log('====resourceId====', resourceId);
+  console.log('====unitId====', unitId);
+  console.log('====templateId====', templateId);
 
-  console.log('=========resourceTemplate=========', report);
+  useEffect(() => {
+    // const exec_btn = document.getElementById('exec_btn');
+    // const res = document.getElementById('res');
+    // const templ = document.getElementById('templ');
+    // const units = document.getElementById('units');
+    // const interval = document.getElementById('interval');
+    // const log = document.getElementById('log');
+
+    // exec_btn.addEventListener('click', function () {
+    //   var reportResourceId = res.value;
+    //   var reportTemplateId = templ.value;
+    //   var reportObjectId = units.value;
+    //   var reportObjectSecId = 0;
+    //   //var interval = interval.value;
+
+    //   var params = {
+    //     reportResourceId: reportResourceId,
+    //     reportTemplateId: reportTemplateId,
+    //     reportObjectId: reportObjectId,
+    //     reportObjectSecId: reportObjectSecId,
+    //     interval: {
+    //       from: from,
+    //       to: to,
+    //       flags: 0,
+    //     },
+    //   };
+
+    //   session
+    //     .request('report/exec_report', params)
+    //     .then(function (data) {
+    //       log.innerHTML = JSON.stringify(data);
+    //     })
+    //     .catch(function (err) {
+    //       log.innerHTML = JSON.stringify(err);
+    //     });
+    // });
+
+    resource.filter((item) => {
+      if (item.nm === resourceName) {
+        setReport(item.rep);
+        setResourceId(item.id);
+      }
+    });
+
+    convertInterval(interval);
+  }, [resourceName, resource, interval]);
   return (
     <>
       <Head>
@@ -188,10 +259,12 @@ export default function Home({ resource, unit, unit_group }) {
                   <div className='card-body'>
                     <select
                       id='templ'
-                      className='js-example-templating js-persons form-control'>
+                      className='js-example-templating js-persons form-control'
+                      onChange={onOptionChangeHandlerTemplate}>
+                      <option>Please choose one option</option>
                       {report &&
                         Object.keys(report).map((key) => (
-                          <option value={report[key].n} key={report[key].id}>
+                          <option value={report[key].id} key={report[key].id}>
                             {report[key].n}
                           </option>
                         ))}
@@ -207,9 +280,11 @@ export default function Home({ resource, unit, unit_group }) {
                   <div className='card-body'>
                     <select
                       id='units'
-                      className='js-example-templating js-persons form-control'>
-                      {pro_unit.map((item) => (
-                        <option value={item.nm} key={item.id}>
+                      className='js-example-templating js-persons form-control'
+                      onChange={onOptionChangeHandlerUnit}>
+                      <option>Please choose one option</option>
+                      {unit.map((item) => (
+                        <option value={item.id} key={item.id}>
                           {item.nm}
                         </option>
                       ))}
@@ -225,19 +300,20 @@ export default function Home({ resource, unit, unit_group }) {
                   <div className='card-body'>
                     <select
                       id='interval'
-                      className='js-example-templating js-persons form-control'>
+                      className='js-example-templating js-persons form-control'
+                      onChange={onOptionChangeHandlerInterval}>
                       <option
-                        value='86400'
+                        value='1-day'
                         title='60 sec * 60 minutes * 24 hours = 86400 sec = 1 day'>
                         Last day
                       </option>
                       <option
-                        value='604800'
+                        value='1-week'
                         title='86400 sec * 7 days = 604800 sec = 1 week'>
                         Last week
                       </option>
                       <option
-                        value='2592000'
+                        value='1-month'
                         title='86400 sec * 30 days = 2592000 sec = 1 month'>
                         Last month
                       </option>
