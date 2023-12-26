@@ -2,7 +2,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { DriverTable } from './table';
+import { AppContext } from '@/context/appContext';
 
 const inter = Inter({ subsets: ['latin'] });
 export async function getStaticProps() {
@@ -101,22 +103,30 @@ export async function getStaticProps() {
 }
 
 export default function Home({ resource, unit, unit_group }) {
+  const {
+    resourceId,
+    setResourceId,
+    templateId,
+    setTemplateId,
+    unitId,
+    setUnitId,
+    fromRef,
+    from,
+    to,
+    toRef,
+  } = useContext(AppContext);
   const [resourceName, setResoureName] = useState('');
-  const [resourceId, setResourceId] = useState('');
-  const [templateId, setTemplateId] = useState('');
-  const [unitId, setUnitId] = useState('');
+
   const [report, setReport] = useState('');
   const [interval, setInterval] = useState('');
-  const fromRef = useRef(null);
-  const toRef = useRef(null);
-  const from = fromRef.current;
-  const to = toRef.current;
-
-  console.log('========resource===========', resource);
-  console.log('========unit===========', unit);
+  const [showTable, setShowTable] = useState(false);
 
   const onOptionChangeHandlerInterval = (event) => {
     setInterval(event.target.value);
+  };
+
+  const toggleShowTable = () => {
+    setShowTable(true);
   };
 
   const convertToUnixTimestamp = (milliseconds) => {
@@ -150,12 +160,8 @@ export default function Home({ resource, unit, unit_group }) {
     }
   };
 
-  console.log('====from====', from);
-  console.log('====to====', to);
-
   const onOptionChangeHandler = (event) => {
     setResoureName(event.target.value);
-    console.log('User Selected Value - ', resourceName);
   };
 
   const onOptionChangeHandlerTemplate = (event) => {
@@ -165,9 +171,6 @@ export default function Home({ resource, unit, unit_group }) {
   const onOptionChangeHandlerUnit = (event) => {
     setUnitId(event.target.value);
   };
-  console.log('====resourceId====', resourceId);
-  console.log('====unitId====', unitId);
-  console.log('====templateId====', templateId);
 
   useEffect(() => {
     // const exec_btn = document.getElementById('exec_btn');
@@ -324,15 +327,27 @@ export default function Home({ resource, unit, unit_group }) {
             </div>
             <div className='row'>
               <div className='btn-list'>
-                <input
+                <button
                   className='btn btn-info'
                   id='exec_btn'
                   type='button'
-                  value='Execute report'
-                />
+                  onClick={toggleShowTable}>
+                  Execute report
+                </button>
               </div>
             </div>
             <div id='log'></div>
+            <div>
+              {showTable && (
+                <DriverTable
+                  resourceId={resourceId}
+                  unitId={unitId}
+                  templateId={templateId}
+                  to={to}
+                  from={from}
+                />
+              )}
+            </div>
             {/* <div className={`${styles.tableBody}`}>
               <table
                 id='dtHorizontalVerticalExample'
