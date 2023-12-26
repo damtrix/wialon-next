@@ -1,131 +1,82 @@
-import Head from 'next/head';
-import Image from 'next/image';
-import { Inter } from 'next/font/google';
-import styles from '@/styles/Home.module.css';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { DriverTable } from './table';
-import { AppContext } from '@/context/appContext';
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { useContext, useEffect, useRef, useState } from "react";
+import { DriverTable } from "./table";
+// import wialon from "wialon";
+import axios from "axios";
+// import { AppContext } from "@/context/appContext";
 
-const inter = Inter({ subsets: ['latin'] });
-export async function getStaticProps() {
-  var wialon = require('wialon');
-
-  let resource, unit, unit_group;
-
-  var opts = {
-    // authz params
-    authz: {
-      token:
-        'cff41ecd2f9615c24a95c8e9d906cde9DFC283DDD9407133F3B10D5E589A8419681732CF',
-    },
-  };
-
-  var session = wialon(opts).session;
-  var paramsResource = {
-    spec: {
-      itemsType: 'avl_resource',
-      propType: 'propitemname',
-      propName: 'reporttemplates',
-      propValueMask: '*',
-      sortType: 'sys_name',
-    },
-    force: 1,
-    flags: 8193,
-    from: 0,
-    to: 0,
-  };
-
-  var paramsUnit = {
-    spec: {
-      itemsType: 'avl_unit',
-      propType: 'propitemname',
-      propName: 'reporttemplates',
-      propValueMask: '*',
-      sortType: 'sys_name',
-    },
-    force: 1,
-    flags: 8193,
-    from: 0,
-    to: 0,
-  };
-
-  var paramsUnitGroup = {
-    spec: {
-      itemsType: 'avl_unit_group',
-      propType: 'propitemname',
-      propName: 'reporttemplates',
-      propValueMask: '*',
-      sortType: 'sys_name',
-    },
-    force: 1,
-    flags: 8193,
-    from: 0,
-    to: 0,
-  };
-
-  await session
-    .request('core/search_items', paramsResource)
-    .then(async function (data) {
-      resource = data.items;
-    })
-    .catch(function (err) {
-      console.log(err);
-      return;
-    });
-
-  await session
-    .request('core/search_items', paramsUnit)
-    .then(async function (data) {
-      unit = data.items;
-    })
-    .catch(function (err) {
-      console.log(err);
-      return;
-    });
-
-  await session
-    .request('core/search_items', paramsUnitGroup)
-    .then(async function (data) {
-      unit_group = data.items;
-    })
-    .catch(function (err) {
-      console.log(err);
-      return;
-    });
-
-  return {
-    props: {
-      resource,
-      unit,
-      unit_group,
-    },
-  };
-}
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({ resource, unit, unit_group }) {
-  const {
-    resourceId,
-    setResourceId,
-    templateId,
-    setTemplateId,
-    unitId,
-    setUnitId,
-    fromRef,
-    from,
-    to,
-    toRef,
-  } = useContext(AppContext);
-  const [resourceName, setResoureName] = useState('');
+  // const {
+  //   resourceId,
+  //   setResourceId,
+  //   templateId,
+  //   setTemplateId,
+  //   unitId,
+  //   setUnitId,
+  //   fromRef,
+  //   from,
+  //   to,
+  //   toRef,
+  // } = useContext(AppContext);
+  // const session = JSON.parse(s);
+  const [resourceId, setResourceId] = useState("");
+  const [templateId, setTemplateId] = useState("");
+  const [unitId, setUnitId] = useState("");
+  const fromRef = useRef(null);
+  const toRef = useRef(null);
+  const from = fromRef.current;
+  const to = toRef.current;
+  const [resourceName, setResoureName] = useState("");
+  // console.log("lll");
 
-  const [report, setReport] = useState('');
-  const [interval, setInterval] = useState('');
+  const [report, setReport] = useState("");
+  const [interval, setInterval] = useState("");
   const [showTable, setShowTable] = useState(false);
 
   const onOptionChangeHandlerInterval = (event) => {
     setInterval(event.target.value);
   };
 
-  const toggleShowTable = () => {
+  const toggleShowTable = async () => {
+    console.log("kk");
+    // const reportResourceId = res.value;
+    // const reportTemplateId = templ.value;
+    // const reportObjectId = units.value;
+    // const reportObjectSecId = 0;
+    //const interval = interval.value;
+
+    const params = {
+      reportResourceId: resourceId,
+      reportTemplateId: parseInt(templateId),
+      reportTemplate: null,
+      reportObjectId: parseInt(unitId),
+      reportObjectSecId: 0,
+      interval: {
+        from: from,
+        to: to,
+        flags: 16777224,
+      },
+      remoteExec: 1,
+    };
+    const table = {
+      tableIndex: 0,
+      config: {
+        type: "range",
+        data: { from: 0, to: 49, level: 0, unitInfo: 1 },
+      },
+    };
+    const res = await axios.post("http://localhost:3000/api/wialon", {
+      params,
+      table,
+    });
+    console.log(res.data);
+
+    // call(params);
     setShowTable(true);
   };
 
@@ -138,26 +89,6 @@ export default function Home({ resource, unit, unit_group }) {
       (dateObject.getTime() - milliseconds) / 1000
     );
     return unixTimestamp;
-  };
-
-  const convertInterval = (interval) => {
-    switch (interval) {
-      case '1-day':
-        fromRef.current = convertToUnixTimestamp(86400000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      case '1-week':
-        fromRef.current = convertToUnixTimestamp(604800000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      case '1-month':
-        fromRef.current = convertToUnixTimestamp(2592000000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      default:
-        fromRef.current = convertToUnixTimestamp(86400000);
-        toRef.current = convertToUnixTimestamp(0);
-    }
   };
 
   const onOptionChangeHandler = (event) => {
@@ -180,34 +111,7 @@ export default function Home({ resource, unit, unit_group }) {
     // const interval = document.getElementById('interval');
     // const log = document.getElementById('log');
 
-    // exec_btn.addEventListener('click', function () {
-    //   var reportResourceId = res.value;
-    //   var reportTemplateId = templ.value;
-    //   var reportObjectId = units.value;
-    //   var reportObjectSecId = 0;
-    //   //var interval = interval.value;
-
-    //   var params = {
-    //     reportResourceId: reportResourceId,
-    //     reportTemplateId: reportTemplateId,
-    //     reportObjectId: reportObjectId,
-    //     reportObjectSecId: reportObjectSecId,
-    //     interval: {
-    //       from: from,
-    //       to: to,
-    //       flags: 0,
-    //     },
-    //   };
-
-    //   session
-    //     .request('report/exec_report', params)
-    //     .then(function (data) {
-    //       log.innerHTML = JSON.stringify(data);
-    //     })
-    //     .catch(function (err) {
-    //       log.innerHTML = JSON.stringify(err);
-    //     });
-    // });
+    //
 
     resource.filter((item) => {
       if (item.nm === resourceName) {
@@ -216,34 +120,51 @@ export default function Home({ resource, unit, unit_group }) {
       }
     });
 
-    convertInterval(interval);
-  }, [resourceName, resource, interval]);
+    switch (interval) {
+      case "1-day":
+        fromRef.current = convertToUnixTimestamp(86400000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      case "1-week":
+        fromRef.current = convertToUnixTimestamp(604800000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      case "1-month":
+        fromRef.current = convertToUnixTimestamp(2592000000);
+        toRef.current = convertToUnixTimestamp(0);
+        break;
+      default:
+        fromRef.current = convertToUnixTimestamp(86400000);
+        toRef.current = convertToUnixTimestamp(0);
+    }
+  }, [resource, interval, setResourceId, resourceName, fromRef, toRef]);
   return (
     <>
       <Head>
         <title>Create Next App</title>
-        <meta name='description' content='Generated by create next app' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
+        <meta name="description" content="Generated by create next app" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className='my-5'>
-          <h1 className='text-center p-2'>
+        <div className="my-5">
+          <h1 className="text-center p-2">
             Wialon Playground - Execute custom report
           </h1>
 
-          <div className='container-sm align-items-center'>
-            <div className='row mb-4'>
-              <div className='col-lg-6 col-md-6 col-sm-12 col-xxl-3'>
-                <div className='card custom-card'>
-                  <div className='card-header'>
-                    <div className='card-title'>Select resource and table</div>
+          <div className="container-sm align-items-center">
+            <div className="row mb-4">
+              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
+                <div className="card custom-card">
+                  <div className="card-header">
+                    <div className="card-title">Select resource and table</div>
                   </div>
-                  <div className='card-body'>
+                  <div className="card-body">
                     <select
-                      id='res'
-                      className='js-example-templating js-persons form-control'
-                      onChange={onOptionChangeHandler}>
+                      id="res"
+                      className="js-example-templating js-persons form-control"
+                      onChange={onOptionChangeHandler}
+                    >
                       <option>Please choose one option</option>
                       {resource.map((item) => (
                         <option value={item.nm} key={item.id}>
@@ -254,16 +175,17 @@ export default function Home({ resource, unit, unit_group }) {
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-md-6 col-sm-12 col-xxl-3'>
-                <div className='card custom-card'>
-                  <div className='card-header'>
-                    <div className='card-title'>Templates</div>
+              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
+                <div className="card custom-card">
+                  <div className="card-header">
+                    <div className="card-title">Templates</div>
                   </div>
-                  <div className='card-body'>
+                  <div className="card-body">
                     <select
-                      id='templ'
-                      className='js-example-templating js-persons form-control'
-                      onChange={onOptionChangeHandlerTemplate}>
+                      id="templ"
+                      className="js-example-templating js-persons form-control"
+                      onChange={onOptionChangeHandlerTemplate}
+                    >
                       <option>Please choose one option</option>
                       {report &&
                         Object.keys(report).map((key) => (
@@ -275,16 +197,17 @@ export default function Home({ resource, unit, unit_group }) {
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-md-6 col-sm-12 col-xxl-3'>
-                <div className='card custom-card'>
-                  <div className='card-header'>
-                    <div className='card-title'>Select unit</div>
+              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
+                <div className="card custom-card">
+                  <div className="card-header">
+                    <div className="card-title">Select unit</div>
                   </div>
-                  <div className='card-body'>
+                  <div className="card-body">
                     <select
-                      id='units'
-                      className='js-example-templating js-persons form-control'
-                      onChange={onOptionChangeHandlerUnit}>
+                      id="units"
+                      className="js-example-templating js-persons form-control"
+                      onChange={onOptionChangeHandlerUnit}
+                    >
                       <option>Please choose one option</option>
                       {unit.map((item) => (
                         <option value={item.id} key={item.id}>
@@ -295,29 +218,33 @@ export default function Home({ resource, unit, unit_group }) {
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-md-6 col-sm-12 col-xxl-3'>
-                <div className='card custom-card'>
-                  <div className='card-header'>
-                    <div className='card-title'>Select time interval</div>
+              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
+                <div className="card custom-card">
+                  <div className="card-header">
+                    <div className="card-title">Select time interval</div>
                   </div>
-                  <div className='card-body'>
+                  <div className="card-body">
                     <select
-                      id='interval'
-                      className='js-example-templating js-persons form-control'
-                      onChange={onOptionChangeHandlerInterval}>
+                      id="interval"
+                      className="js-example-templating js-persons form-control"
+                      onChange={onOptionChangeHandlerInterval}
+                    >
                       <option
-                        value='1-day'
-                        title='60 sec * 60 minutes * 24 hours = 86400 sec = 1 day'>
+                        value="1-day"
+                        title="60 sec * 60 minutes * 24 hours = 86400 sec = 1 day"
+                      >
                         Last day
                       </option>
                       <option
-                        value='1-week'
-                        title='86400 sec * 7 days = 604800 sec = 1 week'>
+                        value="1-week"
+                        title="86400 sec * 7 days = 604800 sec = 1 week"
+                      >
                         Last week
                       </option>
                       <option
-                        value='1-month'
-                        title='86400 sec * 30 days = 2592000 sec = 1 month'>
+                        value="1-month"
+                        title="86400 sec * 30 days = 2592000 sec = 1 month"
+                      >
                         Last month
                       </option>
                     </select>
@@ -325,18 +252,19 @@ export default function Home({ resource, unit, unit_group }) {
                 </div>
               </div>
             </div>
-            <div className='row'>
-              <div className='btn-list'>
+            <div className="row">
+              <div className="btn-list">
                 <button
-                  className='btn btn-info'
-                  id='exec_btn'
-                  type='button'
-                  onClick={toggleShowTable}>
+                  className="btn btn-info"
+                  id="exec_btn"
+                  type="button"
+                  onClick={toggleShowTable}
+                >
                   Execute report
                 </button>
               </div>
             </div>
-            <div id='log'></div>
+            <div id="log"></div>
             <div>
               {showTable && (
                 <DriverTable
@@ -449,4 +377,27 @@ export default function Home({ resource, unit, unit_group }) {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  try {
+    const res = await axios.get("http://localhost:3000/api/wialon");
+    console.log(res);
+    return {
+      props: {
+        resource: res.data.resource,
+        unit: res.data.unit,
+        unit_group: res.data.unit_group,
+      },
+    };
+  } catch (err) {
+    console.log(err.message);
+    return {
+      props: {
+        resource: [],
+        unit: [],
+        unit_group: "",
+      },
+    };
+  }
 }
