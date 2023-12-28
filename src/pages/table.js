@@ -82,16 +82,24 @@ import { useContext } from "react";
 //   };
 // }
 
-export const DriverTable = ({ resourceId, unitId, templateId, to, from }) => {
-  console.log("==========resourceId==========", resourceId);
-  console.log("==========unitId==============", unitId);
-  console.log("==========templateId==========", templateId);
-  console.log("==========to================", to);
-  console.log("==========from=============", from);
+export const DriverTable = ({ tableData }) => {
+  // console.log("==========resourceId==========", resourceId);
+  // console.log("==========unitId==============", unitId);
+  // console.log("==========templateId==========", templateId);
+  // console.log("==========to================", to);
+  // console.log("==========from=============", from);
 
   return (
     <div>
       <h1>Table</h1>
+      {tableData.map((table, i) => (
+        <div key={i}>
+          Driver Name: {table.c[18]}
+          <br />
+          Distance: {parseInt(table.c[16]) - parseInt(table.c[15])} km/h
+          <br />
+        </div>
+      ))}
     </div>
   );
 };

@@ -96,6 +96,7 @@ export default async function handler(req, res) {
   } else if (req.method === "POST") {
     let response;
     console.log(req.body);
+
     await session
       .request("report/exec_report", req.body.params)
       .then(function (data) {
@@ -113,7 +114,6 @@ export default async function handler(req, res) {
       .request("report/get_report_status", {})
       .then(async function (data) {
         console.log(data);
-        //   status = data.items;
       })
       .catch(function (err) {
         console.log(err);
@@ -124,7 +124,6 @@ export default async function handler(req, res) {
       .request("report/apply_report_result", {})
       .then(async function (data) {
         console.log(data);
-        //   apply = data.items;
       })
       .catch(function (err) {
         console.log(err);
@@ -135,7 +134,7 @@ export default async function handler(req, res) {
       .request("report/select_result_rows", req.body.table)
       .then(async function (data) {
         console.log(data);
-        response = data.items || data.reportResult.tables;
+        response = data;
       })
       .catch(function (err) {
         console.log(err);

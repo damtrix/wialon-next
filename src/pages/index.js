@@ -36,6 +36,7 @@ export default function Home({ resource, unit, unit_group }) {
 
   const [report, setReport] = useState("");
   const [interval, setInterval] = useState("");
+  const [tableData, setTableData] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
   const onOptionChangeHandlerInterval = (event) => {
@@ -56,11 +57,7 @@ export default function Home({ resource, unit, unit_group }) {
       reportTemplate: null,
       reportObjectId: parseInt(unitId),
       reportObjectSecId: 0,
-      interval: {
-        from: from,
-        to: to,
-        flags: 16777224,
-      },
+      interval: { flags: 16777216, from, to },
       remoteExec: 1,
     };
     const table = {
@@ -77,6 +74,7 @@ export default function Home({ resource, unit, unit_group }) {
     console.log(res.data);
 
     // call(params);
+    setTableData(res.data.response);
     setShowTable(true);
   };
 
@@ -268,11 +266,12 @@ export default function Home({ resource, unit, unit_group }) {
             <div>
               {showTable && (
                 <DriverTable
-                  resourceId={resourceId}
-                  unitId={unitId}
-                  templateId={templateId}
-                  to={to}
-                  from={from}
+                  tableData={tableData}
+                  // resourceId={resourceId}
+                  // unitId={unitId}
+                  // templateId={templateId}
+                  // to={to}
+                  // from={from}
                 />
               )}
             </div>
