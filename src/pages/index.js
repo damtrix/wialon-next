@@ -1,55 +1,35 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DriverTable } from "./table";
-// import wialon from "wialon";
 import axios from "axios";
-// import { AppContext } from "@/context/appContext";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({ resource, unit, unit_group }) {
-  // const {
-  //   resourceId,
-  //   setResourceId,
-  //   templateId,
-  //   setTemplateId,
-  //   unitId,
-  //   setUnitId,
-  //   fromRef,
-  //   from,
-  //   to,
-  //   toRef,
-  // } = useContext(AppContext);
-  // const session = JSON.parse(s);
   const [resourceId, setResourceId] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [unitId, setUnitId] = useState("");
+  const [loading, setLoading] = useState(false);
   const fromRef = useRef(null);
   const toRef = useRef(null);
-  const from = fromRef.current;
-  const to = toRef.current;
   const [resourceName, setResoureName] = useState("");
-  // console.log("lll");
 
   const [report, setReport] = useState("");
   const [interval, setInterval] = useState("");
   const [tableData, setTableData] = useState([]);
-  const [showTable, setShowTable] = useState(false);
 
   const onOptionChangeHandlerInterval = (event) => {
     setInterval(event.target.value);
   };
 
   const toggleShowTable = async () => {
+    setLoading(true);
     console.log("kk");
     // const reportResourceId = res.value;
     // const reportTemplateId = templ.value;
     // const reportObjectId = units.value;
     // const reportObjectSecId = 0;
     //const interval = interval.value;
+    console.log(fromRef.current);
 
     const params = {
       reportResourceId: resourceId,
@@ -57,7 +37,7 @@ export default function Home({ resource, unit, unit_group }) {
       reportTemplate: null,
       reportObjectId: parseInt(unitId),
       reportObjectSecId: 0,
-      interval: { flags: 16777216, from, to },
+      interval: { flags: 16777216, from: fromRef.current, to: toRef.current },
       remoteExec: 1,
     };
     const table = {
@@ -74,8 +54,8 @@ export default function Home({ resource, unit, unit_group }) {
     console.log(res.data);
 
     // call(params);
+    setLoading(false);
     setTableData(res.data.response);
-    setShowTable(true);
   };
 
   const convertToUnixTimestamp = (milliseconds) => {
@@ -102,21 +82,13 @@ export default function Home({ resource, unit, unit_group }) {
   };
 
   useEffect(() => {
-    // const exec_btn = document.getElementById('exec_btn');
-    // const res = document.getElementById('res');
-    // const templ = document.getElementById('templ');
-    // const units = document.getElementById('units');
-    // const interval = document.getElementById('interval');
-    // const log = document.getElementById('log');
-
-    //
-
     resource.filter((item) => {
       if (item.nm === resourceName) {
         setReport(item.rep);
         setResourceId(item.id);
       }
     });
+    console.log(interval);
 
     switch (interval) {
       case "1-day":
@@ -258,119 +230,18 @@ export default function Home({ resource, unit, unit_group }) {
                   type="button"
                   onClick={toggleShowTable}
                 >
-                  Execute report
+                  {loading ? "Loading..." : "Execute report"}
                 </button>
               </div>
             </div>
             <div id="log"></div>
             <div>
-              {showTable && (
-                <DriverTable
-                  tableData={tableData}
-                  // resourceId={resourceId}
-                  // unitId={unitId}
-                  // templateId={templateId}
-                  // to={to}
-                  // from={from}
-                />
+              {tableData?.length > 0 ? (
+                <DriverTable tableData={tableData} />
+              ) : (
+                <p>No data generated</p>
               )}
             </div>
-            {/* <div className={`${styles.tableBody}`}>
-              <table
-                id='dtHorizontalVerticalExample'
-                className={`${styles.dtHorizontalVerticalExample} table table-striped table-bordered`}
-                cellspacing='0'>
-                <thead className='sticky-top'>
-                  <tr>
-                    <th>Driver Name</th>
-                    <th>Driver Score</th>
-                    <th>Distance</th>
-                    <th>Max Speed</th>
-                    <th className='table table-striped table-bordered'>
-                      <thead>Harsh Events</thead>
-                      <td>Acceleration</td>
-                      <td>Braking</td>
-                      <td>Driving Hours</td>
-                      <td>Speed</td>
-                    </th>
-                    <th>Driver Score Components</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Tiger</td>
-                    <td>Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>
-                      <td>43</td>
-                      <td>43</td>
-                      <td>43</td>
-                      <td>43</td>
-                    </td>
-                    <td>2011/04/25</td>
-                    <td>$320,800</td>
-                    <td>5421</td>
-                    <td>t.nixon@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Garrett</td>
-                    <td>Winters</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>63</td>
-                    <td>2011/07/25</td>
-                    <td>$170,750</td>
-                    <td>8422</td>
-                    <td>g.winters@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Ashton</td>
-                    <td>Cox</td>
-                    <td>Junior Technical Author</td>
-                    <td>San Francisco</td>
-                    <td>66</td>
-                    <td>2009/01/12</td>
-                    <td>$86,000</td>
-                    <td>1562</td>
-                    <td>a.cox@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Cedric</td>
-                    <td>Kelly</td>
-                    <td>Senior Javascript Developer</td>
-                    <td>Edinburgh</td>
-                    <td>22</td>
-                    <td>2012/03/29</td>
-                    <td>$433,060</td>
-                    <td>6224</td>
-                    <td>c.kelly@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Airi</td>
-                    <td>Satou</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>33</td>
-                    <td>2008/11/28</td>
-                    <td>$162,700</td>
-                    <td>5407</td>
-                    <td>a.satou@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Brielle</td>
-                    <td>Williamson</td>
-                    <td>Integration Specialist</td>
-                    <td>New York</td>
-                    <td>61</td>
-                    <td>2012/12/02</td>
-                    <td>$372,000</td>
-                    <td>4804</td>
-                    <td>b.williamson@datatables.net</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> */}
           </div>
         </div>
       </main>

@@ -2,7 +2,6 @@ const wialon = require("wialon");
 
 export default async function handler(req, res) {
   const opts = {
-    // authz params
     authz: {
       token:
         "cff41ecd2f9615c24a95c8e9d906cde9DFC283DDD9407133F3B10D5E589A8419681732CF",
@@ -11,11 +10,9 @@ export default async function handler(req, res) {
 
   const session = await wialon(opts).session;
   if (req.method === "GET") {
-    console.log("llll");
-
     let resource, unit, unit_group;
 
-    var paramsResource = {
+    const paramsResource = {
       spec: {
         itemsType: "avl_resource",
         propType: "propitemname",
@@ -29,7 +26,7 @@ export default async function handler(req, res) {
       to: 0,
     };
 
-    var paramsUnit = {
+    const paramsUnit = {
       spec: {
         itemsType: "avl_unit",
         propType: "propitemname",
@@ -43,7 +40,7 @@ export default async function handler(req, res) {
       to: 0,
     };
 
-    var paramsUnitGroup = {
+    const paramsUnitGroup = {
       spec: {
         itemsType: "avl_unit_group",
         propType: "propitemname",
@@ -95,15 +92,10 @@ export default async function handler(req, res) {
     });
   } else if (req.method === "POST") {
     let response;
-    console.log(req.body);
 
     await session
       .request("report/exec_report", req.body.params)
-      .then(function (data) {
-        console.log(data);
-        // response = data.reportResult.tables;
-        // log.innerHTML = JSON.stringify(data);
-      })
+      .then(function (data) {})
       .catch(function (err) {
         console.log(err);
         return;
@@ -112,9 +104,7 @@ export default async function handler(req, res) {
 
     await session
       .request("report/get_report_status", {})
-      .then(async function (data) {
-        console.log(data);
-      })
+      .then(async function (data) {})
       .catch(function (err) {
         console.log(err);
         return;
@@ -122,9 +112,7 @@ export default async function handler(req, res) {
 
     await session
       .request("report/apply_report_result", {})
-      .then(async function (data) {
-        console.log(data);
-      })
+      .then(async function (data) {})
       .catch(function (err) {
         console.log(err);
         return;
