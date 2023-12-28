@@ -6,397 +6,277 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { DriverTable } from "./table";
 // import wialon from "wialon";
 import axios from "axios";
+import Sidebar from "@/component/Sidebar";
 // import { AppContext } from "@/context/appContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({ resource, unit, unit_group }) {
-  // const {
-  //   resourceId,
-  //   setResourceId,
-  //   templateId,
-  //   setTemplateId,
-  //   unitId,
-  //   setUnitId,
-  //   fromRef,
-  //   from,
-  //   to,
-  //   toRef,
-  // } = useContext(AppContext);
-  // const session = JSON.parse(s);
-  const [resourceId, setResourceId] = useState("");
-  const [templateId, setTemplateId] = useState("");
-  const [unitId, setUnitId] = useState("");
-  const fromRef = useRef(null);
-  const toRef = useRef(null);
-  const from = fromRef.current;
-  const to = toRef.current;
-  const [resourceName, setResoureName] = useState("");
-  // console.log("lll");
+	// const {
+	//   resourceId,
+	//   setResourceId,
+	//   templateId,
+	//   setTemplateId,
+	//   unitId,
+	//   setUnitId,
+	//   fromRef,
+	//   from,
+	//   to,
+	//   toRef,
+	// } = useContext(AppContext);
+	// const session = JSON.parse(s);
+	const [resourceId, setResourceId] = useState("");
+	const [templateId, setTemplateId] = useState("");
+	const [unitId, setUnitId] = useState("");
+	const fromRef = useRef(null);
+	const toRef = useRef(null);
+	const from = fromRef.current;
+	const to = toRef.current;
+	const [resourceName, setResoureName] = useState("");
+	// console.log("lll");
 
-  const [report, setReport] = useState("");
-  const [interval, setInterval] = useState("");
-  const [tableData, setTableData] = useState([]);
-  const [showTable, setShowTable] = useState(false);
+	const [report, setReport] = useState("");
+	const [interval, setInterval] = useState("");
+	const [tableData, setTableData] = useState([]);
+	const [showTable, setShowTable] = useState(false);
 
-  const onOptionChangeHandlerInterval = (event) => {
-    setInterval(event.target.value);
-  };
+	const onOptionChangeHandlerInterval = (event) => {
+		setInterval(event.target.value);
+	};
 
-  const toggleShowTable = async () => {
-    console.log("kk");
-    // const reportResourceId = res.value;
-    // const reportTemplateId = templ.value;
-    // const reportObjectId = units.value;
-    // const reportObjectSecId = 0;
-    //const interval = interval.value;
+	const toggleShowTable = async () => {
+		console.log("kk");
+		// const reportResourceId = res.value;
+		// const reportTemplateId = templ.value;
+		// const reportObjectId = units.value;
+		// const reportObjectSecId = 0;
+		//const interval = interval.value;
 
-    const params = {
-      reportResourceId: resourceId,
-      reportTemplateId: parseInt(templateId),
-      reportTemplate: null,
-      reportObjectId: parseInt(unitId),
-      reportObjectSecId: 0,
-      interval: { flags: 16777216, from, to },
-      remoteExec: 1,
-    };
-    const table = {
-      tableIndex: 0,
-      config: {
-        type: "range",
-        data: { from: 0, to: 49, level: 0, unitInfo: 1 },
-      },
-    };
-    const res = await axios.post("http://localhost:3000/api/wialon", {
-      params,
-      table,
-    });
-    console.log(res.data);
+		const params = {
+			reportResourceId: resourceId,
+			reportTemplateId: parseInt(templateId),
+			reportTemplate: null,
+			reportObjectId: parseInt(unitId),
+			reportObjectSecId: 0,
+			interval: { flags: 16777216, from, to },
+			remoteExec: 1,
+		};
+		const table = {
+			tableIndex: 0,
+			config: {
+				type: "range",
+				data: { from: 0, to: 49, level: 0, unitInfo: 1 },
+			},
+		};
+		const res = await axios.post("http://localhost:3000/api/wialon", {
+			params,
+			table,
+		});
+		console.log(res.data);
 
-    // call(params);
-    setTableData(res.data.response);
-    setShowTable(true);
-  };
+		// call(params);
+		setTableData(res.data.response);
+		setShowTable(true);
+	};
 
-  const convertToUnixTimestamp = (milliseconds) => {
-    // Specify the date and time
-    // const dateString = '2023-12-22 00:00:00';
-    const dateObject = new Date();
+	const convertToUnixTimestamp = (milliseconds) => {
+		// Specify the date and time
+		// const dateString = '2023-12-22 00:00:00';
+		const dateObject = new Date();
 
-    const unixTimestamp = Math.floor(
-      (dateObject.getTime() - milliseconds) / 1000
-    );
-    return unixTimestamp;
-  };
+		const unixTimestamp = Math.floor(
+			(dateObject.getTime() - milliseconds) / 1000
+		);
+		return unixTimestamp;
+	};
 
-  const onOptionChangeHandler = (event) => {
-    setResoureName(event.target.value);
-  };
+	const onOptionChangeHandler = (event) => {
+		setResoureName(event.target.value);
+	};
 
-  const onOptionChangeHandlerTemplate = (event) => {
-    setTemplateId(event.target.value);
-  };
+	const onOptionChangeHandlerTemplate = (event) => {
+		setTemplateId(event.target.value);
+	};
 
-  const onOptionChangeHandlerUnit = (event) => {
-    setUnitId(event.target.value);
-  };
+	const onOptionChangeHandlerUnit = (event) => {
+		setUnitId(event.target.value);
+	};
 
-  useEffect(() => {
-    // const exec_btn = document.getElementById('exec_btn');
-    // const res = document.getElementById('res');
-    // const templ = document.getElementById('templ');
-    // const units = document.getElementById('units');
-    // const interval = document.getElementById('interval');
-    // const log = document.getElementById('log');
+	useEffect(() => {
+		// const exec_btn = document.getElementById('exec_btn');
+		// const res = document.getElementById('res');
+		// const templ = document.getElementById('templ');
+		// const units = document.getElementById('units');
+		// const interval = document.getElementById('interval');
+		// const log = document.getElementById('log');
 
-    //
+		//
 
-    resource.filter((item) => {
-      if (item.nm === resourceName) {
-        setReport(item.rep);
-        setResourceId(item.id);
-      }
-    });
+		resource.filter((item) => {
+			if (item.nm === resourceName) {
+				setReport(item.rep);
+				setResourceId(item.id);
+			}
+		});
 
-    switch (interval) {
-      case "1-day":
-        fromRef.current = convertToUnixTimestamp(86400000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      case "1-week":
-        fromRef.current = convertToUnixTimestamp(604800000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      case "1-month":
-        fromRef.current = convertToUnixTimestamp(2592000000);
-        toRef.current = convertToUnixTimestamp(0);
-        break;
-      default:
-        fromRef.current = convertToUnixTimestamp(86400000);
-        toRef.current = convertToUnixTimestamp(0);
-    }
-  }, [resource, interval, setResourceId, resourceName, fromRef, toRef]);
-  return (
-    <>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <div className="my-5">
-          <h1 className="text-center p-2">
-            Wialon Playground - Execute custom report
-          </h1>
+		switch (interval) {
+			case "1-day":
+				fromRef.current = convertToUnixTimestamp(86400000);
+				toRef.current = convertToUnixTimestamp(0);
+				break;
+			case "1-week":
+				fromRef.current = convertToUnixTimestamp(604800000);
+				toRef.current = convertToUnixTimestamp(0);
+				break;
+			case "1-month":
+				fromRef.current = convertToUnixTimestamp(2592000000);
+				toRef.current = convertToUnixTimestamp(0);
+				break;
+			default:
+				fromRef.current = convertToUnixTimestamp(86400000);
+				toRef.current = convertToUnixTimestamp(0);
+		}
+	}, [resource, interval, setResourceId, resourceName, fromRef, toRef]);
+	return (
+		<>
+			<Head>
+				<title>Create Next App</title>
+				<meta name="description" content="Generated by create next app" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
+			<main>
+				<div className="fixed w-full bg-white z-10 shadow-sm">
+					<div className="py-6 md:py-12 border-b-[1px]">{/* <h2>Header</h2> */}</div>
+				</div>
+				<Sidebar />
 
-          <div className="container-sm align-items-center">
-            <div className="row mb-4">
-              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
-                <div className="card custom-card">
-                  <div className="card-header">
-                    <div className="card-title">Select resource and table</div>
-                  </div>
-                  <div className="card-body">
-                    <select
-                      id="res"
-                      className="js-example-templating js-persons form-control"
-                      onChange={onOptionChangeHandler}
-                    >
-                      <option>Please choose one option</option>
-                      {resource.map((item) => (
-                        <option value={item.nm} key={item.id}>
-                          {item.nm}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
-                <div className="card custom-card">
-                  <div className="card-header">
-                    <div className="card-title">Templates</div>
-                  </div>
-                  <div className="card-body">
-                    <select
-                      id="templ"
-                      className="js-example-templating js-persons form-control"
-                      onChange={onOptionChangeHandlerTemplate}
-                    >
-                      <option>Please choose one option</option>
-                      {report &&
-                        Object.keys(report).map((key) => (
-                          <option value={report[key].id} key={report[key].id}>
-                            {report[key].n}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
-                <div className="card custom-card">
-                  <div className="card-header">
-                    <div className="card-title">Select unit</div>
-                  </div>
-                  <div className="card-body">
-                    <select
-                      id="units"
-                      className="js-example-templating js-persons form-control"
-                      onChange={onOptionChangeHandlerUnit}
-                    >
-                      <option>Please choose one option</option>
-                      {unit.map((item) => (
-                        <option value={item.id} key={item.id}>
-                          {item.nm}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
-                <div className="card custom-card">
-                  <div className="card-header">
-                    <div className="card-title">Select time interval</div>
-                  </div>
-                  <div className="card-body">
-                    <select
-                      id="interval"
-                      className="js-example-templating js-persons form-control"
-                      onChange={onOptionChangeHandlerInterval}
-                    >
-                      <option
-                        value="1-day"
-                        title="60 sec * 60 minutes * 24 hours = 86400 sec = 1 day"
-                      >
-                        Last day
-                      </option>
-                      <option
-                        value="1-week"
-                        title="86400 sec * 7 days = 604800 sec = 1 week"
-                      >
-                        Last week
-                      </option>
-                      <option
-                        value="1-month"
-                        title="86400 sec * 30 days = 2592000 sec = 1 month"
-                      >
-                        Last month
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="btn-list">
-                <button
-                  className="btn btn-info"
-                  id="exec_btn"
-                  type="button"
-                  onClick={toggleShowTable}
-                >
-                  Execute report
-                </button>
-              </div>
-            </div>
-            <div id="log"></div>
-            <div>
-              {showTable && (
-                <DriverTable
-                  tableData={tableData}
-                  // resourceId={resourceId}
-                  // unitId={unitId}
-                  // templateId={templateId}
-                  // to={to}
-                  // from={from}
-                />
-              )}
-            </div>
-            {/* <div className={`${styles.tableBody}`}>
-              <table
-                id='dtHorizontalVerticalExample'
-                className={`${styles.dtHorizontalVerticalExample} table table-striped table-bordered`}
-                cellspacing='0'>
-                <thead className='sticky-top'>
-                  <tr>
-                    <th>Driver Name</th>
-                    <th>Driver Score</th>
-                    <th>Distance</th>
-                    <th>Max Speed</th>
-                    <th className='table table-striped table-bordered'>
-                      <thead>Harsh Events</thead>
-                      <td>Acceleration</td>
-                      <td>Braking</td>
-                      <td>Driving Hours</td>
-                      <td>Speed</td>
-                    </th>
-                    <th>Driver Score Components</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Tiger</td>
-                    <td>Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>
-                      <td>43</td>
-                      <td>43</td>
-                      <td>43</td>
-                      <td>43</td>
-                    </td>
-                    <td>2011/04/25</td>
-                    <td>$320,800</td>
-                    <td>5421</td>
-                    <td>t.nixon@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Garrett</td>
-                    <td>Winters</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>63</td>
-                    <td>2011/07/25</td>
-                    <td>$170,750</td>
-                    <td>8422</td>
-                    <td>g.winters@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Ashton</td>
-                    <td>Cox</td>
-                    <td>Junior Technical Author</td>
-                    <td>San Francisco</td>
-                    <td>66</td>
-                    <td>2009/01/12</td>
-                    <td>$86,000</td>
-                    <td>1562</td>
-                    <td>a.cox@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Cedric</td>
-                    <td>Kelly</td>
-                    <td>Senior Javascript Developer</td>
-                    <td>Edinburgh</td>
-                    <td>22</td>
-                    <td>2012/03/29</td>
-                    <td>$433,060</td>
-                    <td>6224</td>
-                    <td>c.kelly@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Airi</td>
-                    <td>Satou</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>33</td>
-                    <td>2008/11/28</td>
-                    <td>$162,700</td>
-                    <td>5407</td>
-                    <td>a.satou@datatables.net</td>
-                  </tr>
-                  <tr>
-                    <td>Brielle</td>
-                    <td>Williamson</td>
-                    <td>Integration Specialist</td>
-                    <td>New York</td>
-                    <td>61</td>
-                    <td>2012/12/02</td>
-                    <td>$372,000</td>
-                    <td>4804</td>
-                    <td>b.williamson@datatables.net</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> */}
-          </div>
-        </div>
-      </main>
-    </>
-  );
+				<div className="pt-36 pb-20 md:pl-20 mx-auto max-w-6xl">
+					<div className="grid grid-cols-12 gap-6">
+						<div className="flex flex-col col-span-full sm:col-span-6 bg-white shadow-sm rounded-sm border border-slate-200">
+							<header className="px-5 py-4 border-b border-slate-100">
+								<h2 className="font-semibold text-slate-800">
+									Select resource and table
+								</h2>
+							</header>
+							<div className="w-full px-4 py-4 mx-auto">
+								<select
+									id="res"
+									class="form-select w-full"
+									onChange={onOptionChangeHandler}
+								>
+									<option disabled>Please choose one option</option>
+									{resource.map((item) => (
+										<option value={item.nm} key={item.id}>
+											{item.nm}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+
+						<div className="flex flex-col col-span-full sm:col-span-6 bg-white shadow-sm rounded-sm border border-slate-200">
+							<header className="px-5 py-4 border-b border-slate-100">
+								<h2 className="font-semibold text-slate-800">Templates</h2>
+							</header>
+							<div className="w-full px-4 py-4 mx-auto">
+								<select id="templ" class="form-select w-full">
+									<option disabled>Please choose one option</option>
+									{report &&
+										Object.keys(report).map((key) => (
+											<option value={report[key].n} key={report[key].id}>
+												{report[key].n}
+											</option>
+										))}
+								</select>
+							</div>
+						</div>
+
+						<div className="flex flex-col col-span-full sm:col-span-6 bg-white shadow-sm rounded-sm border border-slate-200">
+							<header className="px-5 py-4 border-b border-slate-100">
+								<h2 className="font-semibold text-slate-800">Select unit</h2>
+							</header>
+							<div className="w-full px-4 py-4 mx-auto">
+								<select
+									id="units"
+									class="form-select w-full
+                "
+									onChange={onOptionChangeHandlerUnit}
+								>
+									<option disabled>Please choose one option</option>
+									{unit.map((item) => (
+										<option value={item.id} key={item.id}>
+											{item.nm}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+
+						<div className="flex flex-col col-span-full sm:col-span-6 bg-white shadow-sm rounded-sm border border-slate-200">
+							<header className="px-5 py-4 border-b border-slate-100">
+								<h2 className="font-semibold text-slate-800">Select time interval</h2>
+							</header>
+							<div className="w-full px-4 py-4 mx-auto">
+								<select id="interval" class="form-select w-full">
+									<option
+										value="86400"
+										title="60 sec * 60 minutes * 24 hours = 86400 sec = 1 day"
+									>
+										Last day
+									</option>
+									<option
+										value="604800"
+										title="86400 sec * 7 days = 604800 sec = 1 week"
+									>
+										Last week
+									</option>
+									<option
+										value="2592000"
+										title="86400 sec * 30 days = 2592000 sec = 1 month"
+									>
+										Last month
+									</option>
+								</select>
+							</div>
+						</div>
+
+						<div className="btn-list">
+							<input
+								className="btn btn-info"
+								id="exec_btn"
+								type="button"
+								value="Execute report"
+							/>
+						</div>
+
+						<div id="log"></div>
+					</div>
+				</div>
+			</main>
+		</>
+	);
 }
 
 export async function getServerSideProps() {
-  try {
-    const res = await axios.get("http://localhost:3000/api/wialon");
-    console.log(res);
-    return {
-      props: {
-        resource: res.data.resource,
-        unit: res.data.unit,
-        unit_group: res.data.unit_group,
-      },
-    };
-  } catch (err) {
-    console.log(err.message);
-    return {
-      props: {
-        resource: [],
-        unit: [],
-        unit_group: "",
-      },
-    };
-  }
+	try {
+		const res = await axios.get("http://localhost:3000/api/wialon");
+		console.log(res);
+		return {
+			props: {
+				resource: res.data.resource,
+				unit: res.data.unit,
+				unit_group: res.data.unit_group,
+			},
+		};
+	} catch (err) {
+		console.log(err.message);
+		return {
+			props: {
+				resource: [],
+				unit: [],
+				unit_group: "",
+			},
+		};
+	}
 }
