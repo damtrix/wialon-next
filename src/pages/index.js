@@ -183,7 +183,7 @@ export default function Home({ resource, unit, unit_group }) {
               <div className='col-lg-6 col-md-6 col-sm-12 col-xxl-3'>
                 <div className='card custom-card'>
                   <div className='card-header'>
-                    <div className='card-title'>Select unit</div>
+                    <div className='card-title'>Select group</div>
                   </div>
                   <div className='card-body'>
                     <select
